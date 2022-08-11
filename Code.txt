@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import skimage
+import pandas
+import matplotlib
+import matplotlib.pyplot as plt
+import skimage.io as io
+import numpy as np
+
+# opening images, converting from rgb to gray and saving new images
+
+from skimage.color import rgb2gray
+im1 = io.imread('downloads/7400-1.jpg')
+io.imshow(im1)
+
+strip1 = im1 [:,600:900]
+io.imshow(strip1)
+
+g1=rgb2gray(strip1)
+io.imshow(g1)
+
+io.imsave('downloads/M1.jpg',g1)
+
+im2 = io.imread('downloads/7400-2.jpg')
+io.imshow(im2)
+
+strip2 = im2 [:,600:900]
+io.imshow(strip2)
+
+g2=rgb2gray(strip2)
+io.imshow(g2)
+
+io.imsave('downloads/M2.jpg',g2)
+
+im3 = io.imread('downloads/7400-3.jpg')
+io.imshow(im3)
+
+strip3 = im3 [:,600:900]
+io.imshow(strip3)
+io.imsave('downloads/M3.jpg',g3)
+ 
+ 
+g3=rgb2gray(strip3)
+io.imshow(g3)
+
+im4 = io.imread('downloads/7400-4.jpg')
+io.imshow(im4)
+
+strip4 = im4 [:,600:900]
+io.imshow(strip4)
+
+g4=rgb2gray(strip4)
+io.imshow(g4)
+io.imsave('downloads/M4.jpg',g4)
+
+#opening newly created gray images
+
+from PIL import Image
+M1=Image.open('downloads/M1.jpg')
+M2=Image.open('downloads/M2.jpg')
+M3=Image.open('downloads/M3.jpg')
+M4=Image.open('downloads/M4.jpg')
+
+# functions for creating a new image and concatenating multiple images 
+
+def get_concat_h_blank(im1, im2, color=(0, 0, 0)):
+    dst= Image.new('RGB', (im1.width + im2.width, max(im1.height, im2.height)), color)
+    dst.paste(im1, (0,0))
+    dst.paste(im2, (im1.width,0))
+    return dst
+
+
+def get_concat_h_multi_blank(im_list):
+    _im = im_list.pop(0)
+    for im in im_list:
+        _im = get_concat_h_blank(_im, im)
+    return _im
+
+get_concat_h_multi_blank([M1, M2, M3, M4]).save('downloads/MN.jpg')
+
+MN = io.imread('downloads/MN.jpg')
+io.imshow(MN)
+
+# inverting the merged image
+
+from skimage import util
+inv_merge_gr=util.invert(MN)
+io.imshow(inv_merge_gr)
+
+# profile line to return an intensity profile of image measured along the scan line
+
+from skimage.measure import profile_line
+
+start = (0, 1200) 
+end = (50, 50) 
+
+profile = profile_line(inv_merge_gr, start, end, linewidth=50, mode='constant')
+fig, ax = plt.subplots(2, 1, figsize=(10, 10)) 
+ax[0].imshow(inv_merge_gr) 
+ax[0].plot(start, end, 'r-', lw=2)
+ax[1].plot(profile)
+ax[1].grid()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
